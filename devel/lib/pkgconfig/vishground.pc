@@ -1,0 +1,8 @@
+prefix=/home/ubuntuihiw/vishground_ws/devel
+
+Name: vishground
+Description: Description of vishground
+Version: 0.0.0
+Cflags: -I/home/ubuntuihiw/vishground_ws/src/vishground/include
+Libs: -L${prefix}/lib -lvishground
+Requires: geometry_msgs mavros mavros_msgs nav_msgs roscpp roslaunch rospy std_msgs

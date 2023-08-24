@@ -1,8 +1,0 @@
-prefix=/home/ubuntuihiw/vishground_ws/install
-
-Name: vishground
-Description: Description of vishground
-Version: 0.0.0
-Cflags: -I${prefix}/include
-Libs: -L${prefix}/lib -lvishground
-Requires: geometry_msgs mavros mavros_msgs nav_msgs roscpp roslaunch rospy std_msgs

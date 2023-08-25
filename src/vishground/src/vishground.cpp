@@ -6,7 +6,7 @@ int main(int argc, char **argv) {
   ros::Rate rate(20);
   VishgroundAPI vishgroundapi(nh, rate);
 
-  vishgroundapi.arm();
+  // vishgroundapi.arm();
 
   ros::spin();
 

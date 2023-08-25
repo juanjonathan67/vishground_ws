@@ -5,6 +5,9 @@ int main(int argc, char **argv) {
   ros::NodeHandle nh;
   ros::Rate rate(20);
   VishgroundAPI vishgroundapi(nh, rate);
+
+  vishgroundapi.arm();
+
   ros::spin();
 
   return 0;

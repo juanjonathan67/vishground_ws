@@ -17,6 +17,7 @@ find_package(catkin REQUIRED COMPONENTS
   rospy
   std_msgs
   sensor_msgs
+  mqtt_client
 )
 
 ## System dependencies are found with CMake's conventions
@@ -122,17 +123,19 @@ catkin_package(
 ## Specify additional locations of header files
 ## Your package locations should be listed before other locations
 include_directories(
- include
+  include
   ${catkin_INCLUDE_DIRS}
 )
 
 ## Declare a C++ library
-  add_library(${PROJECT_NAME}
-   src/vishground_api.cpp
- )
- target_link_libraries(${PROJECT_NAME}
-    ${catkin_LIBRARIES}
- )
+add_library(${PROJECT_NAME}
+  src/vishground_api.cpp
+)
+
+target_link_libraries(${PROJECT_NAME}
+  ${catkin_LIBRARIES}
+  mqtt_client
+)
 
 ## Add cmake target dependencies of the library
 ## as an example, code may need to be generated before libraries
@@ -155,10 +158,11 @@ add_executable(${PROJECT_NAME}_node src/vishground.cpp)
 # add_dependencies(${PROJECT_NAME}_node ${${PROJECT_NAME}_EXPORTED_TARGETS} ${catkin_EXPORTED_TARGETS})
 
 ## Specify libraries to link a library or executable target against
- target_link_libraries(${PROJECT_NAME}_node
-   ${catkin_LIBRARIES}
-   ${PROJECT_NAME}
- )
+target_link_libraries(${PROJECT_NAME}_node
+  ${catkin_LIBRARIES}
+  ${PROJECT_NAME}
+  mqtt_client
+)
 
 #############
 ## Install ##

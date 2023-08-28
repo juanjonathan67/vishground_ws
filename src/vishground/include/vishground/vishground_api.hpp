@@ -1,4 +1,6 @@
 #include "ros/ros.h"
+#include "mqtt_client/mqtt_client.hpp"
+
 #include <string>
 
 #include "mavros_msgs/CommandBool.h"
@@ -19,12 +21,19 @@ class VishgroundAPI {
   public :
     VishgroundAPI(ros::NodeHandle &nh, ros::Rate &rate);
 
+    MQTTClient * get_mqtt_client();
+
     void arm();
     void disarm();
 
-    //API
+    //Getters
+    double get_rel_alt();
 
   private :
+    MQTTClient *mqtt_client;
+
+    double rel_alt;
+
     ros::NodeHandle nh_;
     ros::Rate rate_;
   //service and client 

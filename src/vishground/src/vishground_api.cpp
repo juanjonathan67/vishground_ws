@@ -1,13 +1,13 @@
 #include "vishground/vishground_api.hpp"
 
 //Constructor 
-VishgroundAPI::VishgroundAPI(ros::NodeHandle &nh, ros::Rate &rate) : nh_(nh), rate_(rate) {
+VishgroundAPI::VishgroundAPI(ros::NodeHandle &nh, ros::Rate &rate) : nh_(nh), rate_(rate){
+    mqtt_client = new MQTTClient();
     
     //initialize service and client
     cmd_cli = nh.serviceClient<mavros_msgs::CommandLong>("/mavros/cmd/command");
     cmd_arm_cli = nh.serviceClient<mavros_msgs::CommandBool>("/mavros/cmd/arming");
     
-
     //initialize subscriber
     local_position_pose_sub = nh_.subscribe("mavros/local_position/pose", 10, &VishgroundAPI::local_position_pose_cb, this);
     local_position_velocity_sub = nh_.subscribe("mavros/local_position/velocity", 10, &VishgroundAPI::local_position_velocity_cb, this);
@@ -18,6 +18,19 @@ VishgroundAPI::VishgroundAPI(ros::NodeHandle &nh, ros::Rate &rate) : nh_(nh), ra
     global_position_compass_hdg_sub = nh_.subscribe("mavros/global_position/compass_hdg",10,&VishgroundAPI::global_position_compass_hdg_cb, this);
     state_sub = nh_.subscribe("mavros/state",10,&VishgroundAPI::state_cb, this);
     battery_sub = nh_.subscribe("mavros/battery",10,&VishgroundAPI::battery_cb, this);
+
+    //initialize mqtt publisher
+    mqtt_client->create_publisher("/drone/battery");
+    mqtt_client->create_publisher("/drone/rel_alt");
+
+    //initialize mqtt subscriber
+    mqtt_client->create_subscriber("/test");
+
+}
+
+//Getter APIs
+MQTTClient * VishgroundAPI::get_mqtt_client() {
+  return mqtt_client;
 }
 
 //Drone APIs
@@ -43,7 +56,10 @@ void VishgroundAPI::disarm() {
   }
 }
 
-
+//Getter APIs
+double VishgroundAPI::get_rel_alt() {
+  return rel_alt;
+}
 
 //Callback APIs
 void VishgroundAPI::local_position_pose_cb(const geometry_msgs::PoseStamped &msg) {
@@ -60,6 +76,7 @@ void VishgroundAPI::global_position_global_cb(const sensor_msgs::NavSatFix &msg)
 
 void VishgroundAPI::global_position_rel_alt_cb(const std_msgs::Float64 &msg) {
   ROS_INFO("\nrelative altitude: %lf \n", msg.data);
+  mqtt_client->get_publisher("/drone/rel_alt").publish(std::to_string(msg.data));
 }
 
 void VishgroundAPI::global_position_gp_vel_cb(const geometry_msgs::TwistStamped &msg) {
@@ -76,4 +93,5 @@ void VishgroundAPI::state_cb(const mavros_msgs::State &msg) {
 
 void VishgroundAPI::battery_cb(const sensor_msgs::BatteryState &msg) {
   ROS_INFO("\npercentage : %f \nvoltage : %f \n", msg.percentage, msg.voltage);
+  mqtt_client->get_publisher("/drone/battery").publish(std::to_string(msg.percentage));
 }
